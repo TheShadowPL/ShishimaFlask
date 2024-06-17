@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shishima Gra</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;400;700&display=swap" rel="stylesheet">
+     <style>
+         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;400;700&display=swap');
+        body {
+            background-color: #F7F7F7;
+            font-family: 'Noto Sans JP', sans-serif;
+            color: #333333;
+            background-image: url('static/img/bacground.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        h1, h2 {
+            color: #444444;
+            text-shadow: 1px 1px 2px #aaa;
+        }
+        .btn-primary {
+            background-color: #F08080;
+            border-color: #F08080;
+            color: #ffffff;
+        }
+        .btn-secondary {
+            background-color: #87CEFA;
+            border-color: #87CEFA;
+            color: #ffffff;
+        }
+        .list-group-item {
+            background-color: transparent !important;
+            border: none !important;
+            color: #333333;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .modal-header, .modal-footer {
+            border-bottom: 1px solid #ddd;
+            border-top: 1px solid #ddd;
+        }
+        .table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.36);
+            backdrop-filter: blur(2px);
+        }
+
+        .table th,
+        .table td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            font-size: 1.2rem;
+        }
+
+        .table thead th {
+            background-color: #F08080;
+            color: white;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f0f0f0;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mt-5">ようこそ Shishima ゲームへ!</h1>
+        <div class="text-center mt-5">
+            <button class="btn btn-primary" id="newGameButton" data-toggle="modal" data-target="#newGameModal">Nowa gra</button>
+            <button class="btn btn-secondary" id="joinGameButton" data-toggle="modal" data-target="#joinGameModal">Dołącz do gry</button>
+        </div>
+        <div class="container">
+            <h2 class="text-center mt-5">Lista Wygranych graczy</h2>
+            <table class="table table-hover mt-3">
+                <thead>
+                    <tr>
+                        <th scope="col">Gracz</th>
+                        <th scope="col">Wygrane gry</th>
+                    </tr>
+                </thead>
+                <tbody id="playersList">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="newGameModal" tabindex="-1" role="dialog" aria-labelledby="newGameModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newGameModalLabel">Nowa Gra</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Zamknij">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="playerName">Nazwa gracza</label>
+                            <input type="text" class="form-control" id="playerName" placeholder="Wpisz swoją nazwę">
+                        </div>
+                        <div class="form-group">
+                            <label for="lobbyTitle">Tytuł lobby</label>
+                            <input type="text" class="form-control" id="lobbyTitle" placeholder="Wpisz tytuł lobby">
+                        </div>
+                        <div class="form-group">
+                            <label for="pieceColor">Kolor pionka</label>
+                            <select class="form-control" id="pieceColor">
+                                <option value="red">Czerwony</option>
+                                <option value="blue">Niebieski</option>
+                                <option value="green">Zielony</option>
+                                <option value="yellow">Żółty</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+                    <button type="button" class="btn btn-primary" id="StartGameButton">Zacznij grę</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="modal fade" id="joinGameModal" tabindex="-1" role="dialog" aria-labelledby="joinGameModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="joinGameModalLabel">Dołącz do Gry</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Zamknij">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div id="joinGameModalBody" class="modal-body">
+                    <ul class="list-group" id="gamesList">
+
+                    </ul>
+                </div>
+                <div id="joinGameModalForms" class="modal-forms" style="display: none;">
+                    <form>
+                        <input type="hidden" id="joinGameLobbyName">
+                        <div class="form-group">
+                            <label for="joinPlayerName">Twój nick</label>
+                            <input type="text" class="form-control" id="joinPlayerName" placeholder="Wpisz swoją nazwę">
+                        </div>
+                        <div class="form-group">
+                            <label for="joinGamePieceColor">Twój kolor pionka</label>
+                            <select class="form-control" id="joinGamePieceColor">
+                                <option value="null">Wybierz Kolor</option>
+                                <option value="red">Czerwony</option>
+                                <option value="blue">Niebieski</option>
+                                <option value="green">Zielony</option>
+                                <option value="yellow">Żółty</option>
+                            </select>
+                        </div>
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelJoinAction">Anuluj</button>
+                        <button type="button" class="btn btn-primary" id="joinGameStartButton">Dołącz</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+    <script>
+        let selectedLobbyID;
+        document.addEventListener('DOMContentLoaded', function() {
+            const joinGameModalBody = document.getElementById('joinGameModalBody');
+            const joinGameModalForms = document.getElementById('joinGameModalForms');
+
+            fetch('/games')
+                .then(response => response.json())
+                .then(data => {
+                    const gamesList = document.createElement('ul');
+                    gamesList.classList.add('list-group');
+                    data.forEach(game => {
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+                        const gameInfo = document.createElement('span');
+                        gameInfo.textContent = `Lobby: ${game.lobbyName} - Gracze: ${game.players}/2`;
+                        const joinButton = document.createElement('button');
+                        joinButton.textContent = 'Dołącz';
+                        joinButton.classList.add('btn', 'btn-primary', 'join-game-button');
+                        joinButton.setAttribute('data-lobby-id', game.lobbyID);
+                        joinButton.addEventListener('click', function() {
+                            if (game.players === 2) {
+                                alert('Lobby jest pełne!');
+                            } else {
+                                joinGameModalBody.style.display = 'none';
+                                joinGameModalForms.style.display = 'block';
+
+                                document.getElementById('joinGameLobbyName').value = game.lobbyName;
+
+                                const hostPieceColor = game.hostPieceColor;
+
+                                const pieceColorSelect = document.getElementById('joinGamePieceColor');
+                                Array.from(pieceColorSelect.options).forEach(option => {
+                                    if (option.value !== hostPieceColor) {
+                                        option.disabled = false;
+                                    } else {
+                                        option.disabled = true;
+                                    }
+                                });
+                               // const lobbyID = this.getAttribute('data-lobby-id');
+                                selectedLobbyID = this.getAttribute('data-lobby-id');
+                            }
+                        });
+                        listItem.appendChild(gameInfo);
+                        listItem.appendChild(joinButton);
+                        gamesList.appendChild(listItem);
+
+                    });
+
+                    if (data.length === 0) {
+                        const noGamesMessage = document.createElement('p');
+                        noGamesMessage.textContent = 'Brak dostępnych rozgrywek.';
+                        gamesList.appendChild(noGamesMessage);
+                    }
+
+                    joinGameModalBody.innerHTML = '';
+                    joinGameModalBody.appendChild(gamesList);
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('joinGameModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('joinGameModalBody').style.display = 'block';
+            document.getElementById('joinGameModalForms').style.display = 'none';
+        });
+
+        document.querySelector('#joinGameModal .btn-secondary').addEventListener('click', function() {
+            document.getElementById('joinGameModalBody').style.display = 'block';
+            document.getElementById('joinGameModalForms').style.display = 'none';
+        });
+    </script>
+    <script>
+
+                document.addEventListener('DOMContentLoaded', function() {
+            var newGameButton = document.getElementById("StartGameButton");
+
+            newGameButton.addEventListener("click", function() {
+                var playerName = document.getElementById("playerName").value;
+                var lobbyTitle = document.getElementById("lobbyTitle").value;
+                //var pieceColor = document.getElementById("pieceColor").value;
+                var pieceColor = document.getElementById('pieceColor').value;
+
+                fetch(`/check_lobby?lobbyName=${lobbyTitle}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            alert(`Lobby o nazwie "${lobbyTitle}" już istnieje. Wybierz inną nazwę.`);
+                        } else {
+                            var gameData = {
+                                playerName: playerName,
+                                lobbyTitle: lobbyTitle,
+                                pieceColor: pieceColor
+                            };
+
+                            fetch('/start_game', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(gameData),
+                            })
+                            .then(response => {
+                                console.log(response)
+                                if (response.ok) {
+                                    const redirectUrl = response.url;
+                                    window.location.href = redirectUrl;
+                                } else {
+                                    console.error('Błąd podczas przekazywania danych do backendu');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Błąd podczas przekazywania danych do backendu:', error);
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Błąd podczas sprawdzania istnienia lobby:', error));
+                });
+            });
+        </script>
+    <script>
+        function joinGame(lobbyName, playerName, pieceColor, lobbyID) {
+            if (pieceColor === "null") {
+                alert("Wybierz kolor pionka!");
+                return;
+            }
+
+            var gameData = {
+                playerName: playerName,
+                lobbyName: lobbyName,
+                pieceColor: pieceColor,
+                lobbyID: lobbyID
+            };
+
+            console.log(gameData)
+
+            fetch('/join_game', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(gameData),
+            })
+            .then(response => {
+                const redirectUrl = response.url;
+                window.location.href = redirectUrl;
+            })
+            .catch(error => {
+                console.error('Błąd podczas przekazywania danych do backendu:', error);
+            });
+        }
+
+        document.getElementById('joinGameStartButton').addEventListener('click', function() {
+            var lobbyName = document.getElementById('joinGameLobbyName').value;
+            var playerName = document.getElementById('joinPlayerName').value;
+            var pieceColor = document.getElementById('joinGamePieceColor').value;
+             var lobbyID = selectedLobbyID;
+            //var lobbyID = document.getElementById('joinGameStartButton').getAttribute('data-lobby-id');
+
+            joinGame(lobbyName, playerName, pieceColor, lobbyID);
+        });
+
+    </script>
+
+    <script>
+        window.onload = function() {
+            fetch('/winners')
+                .then(response => response.json())
+                .then(data => {
+                    const playersTableBody = document.getElementById('playersList');
+                    data.forEach(player => {
+                        const tableRow = document.createElement('tr');
+                        const playerNameCell = document.createElement('td');
+                        playerNameCell.textContent = player.player;
+                        const gamesWonCell = document.createElement('td');
+                        gamesWonCell.textContent = player.games_won;
+
+                        tableRow.appendChild(playerNameCell);
+                        tableRow.appendChild(gamesWonCell);
+                        playersTableBody.appendChild(tableRow);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        };
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
